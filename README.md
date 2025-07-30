@@ -216,7 +216,7 @@ const cover = Coverize.cover()
   .author('Leo Tolstoy')
   .color(5) // Sienna Reach
   .effects({ realism: true, texture: true })
-  .options({ font: 'serif', emphasis: 'title' })
+  .options({ font: 'serif', emphasis: 'case' })
   .render();
 
 // Modern sans
@@ -225,7 +225,7 @@ const cover = Coverize.cover()
   .author('Yuval Noah Harari')
   .color(1) // Sage Abbey
   .effects({ realism: true })
-  .options({ font: 'sans', emphasis: 'author' })
+  .options({ font: 'sans', emphasis: 'both' })
   .render();
 ```
 
