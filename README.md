@@ -28,7 +28,7 @@ Add CoverizeJS to your HTML page via CDN:
 
 ### Download
 
-Download the minified distribution file directly from this repository (singe .js file with embedded CSS).
+Download the minified distribution file directly from this repository's releases (singe .js file with embedded CSS).
 
 ### Local Installation
 
@@ -36,13 +36,6 @@ Download the minified distribution file directly from this repository (singe .js
 git clone https://github.com/aosmcleod/coverizejs.git
 cd coverizejs
 npm install
-```
-
-Then include in your HTML:
-
-```html
-<!-- Single file with embedded CSS -->
-<script src="path/to/dist/coverize-1.0.0.min.js"></script>
 ```
 
 ## Quick Start
