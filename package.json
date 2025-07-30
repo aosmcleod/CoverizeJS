@@ -1,0 +1,61 @@
+{
+  "name": "coverizejs",
+  "version": "1.0.0",
+  "description": "Intelligent book cover typesetting for visually balanced, multi-line titles and authors.",
+  "main": "coverize.js",
+  "type": "module",
+  "files": [
+    "coverize.js",
+    "coverize.css",
+    "texture.css",
+    "textures/",
+    "demo/",
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "echo \"No tests yet.\"",
+    "demo": "open demo/demo.html",
+    "build": "node build.js",
+    "build:watch": "node -e \"const {build} = require('./build.js'); const fs = require('fs'); console.log('👀 Watching for changes...'); ['coverize.css', 'coverize.js', 'texture.css'].forEach(f => { if (fs.existsSync(f)) fs.watchFile(f, () => { console.log('🔄 Rebuilding...'); build(); }); });\"",
+    "release": "node release.js",
+    "release:minor": "node release.js minor",
+    "release:major": "node release.js major",
+    "prebuild": "echo \"🚀 Starting build process...\"",
+    "postbuild": "echo \"✅ Build process complete!\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alecmcleod/coverizejs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/alecmcleod/coverizejs/issues"
+  },
+  "homepage": "https://github.com/alecmcleod/coverizejs#readme",
+  "keywords": [
+    "book",
+    "cover",
+    "typesetting",
+    "typography",
+    "title",
+    "author",
+    "design",
+    "graphics",
+    "javascript",
+    "css",
+    "library",
+    "browser"
+  ],
+  "author": {
+    "name": "Alec McLeod",
+    "url": "https://github.com/aosmcleod"
+  },
+  "license": "GPL-3.0",
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.8"
+  }
+}

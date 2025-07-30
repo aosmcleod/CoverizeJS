@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CoverizeJS - Modern Book Cover Generation</title>
+  <link rel="stylesheet" href="../coverize.css" />  <link rel="stylesheet" href="../texture.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ==================== GLOBAL STYLES ==================== */
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #f8f9fa; color: #1a1a1a; line-height: 1.6; }
+    /* ==================== HEADER STYLES ==================== */
+    .header, .tab-nav, .showcase-section, .demo-examples-box, .license-box, .code-block, .demo-result { background: white; border: 1px solid #e1e5e9; }
+    .header { border-bottom: 1px solid #e1e5e9; padding: 1rem; text-align: center; }
+    .tab-nav { border-top: none; padding: 0 1rem; display: flex; justify-content: center; position: sticky; top: 0; z-index: 10; }
+    .showcase-section { margin-bottom: 1rem; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
+
+    .demo-examples-box { padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
+    .license-box, .code-block { background: #f8f9fa; padding: 1rem; border-radius: 6px; border: 1px solid #e1e5e9; }
+    .code-block { position: relative; overflow-x: auto; }
+    .demo-result { display: flex; justify-content: center; padding: 2rem; background: #f8f9fa; border-radius: 8px; margin-top: 1rem; }
+    .header-content { max-width: 1200px; margin: 0 auto; }
+    .header-title { margin: 0; font-size: 2.5rem; font-weight: 600; letter-spacing: -0.02em; font-family: 'Inter', sans-serif; color: #1a1a1a; }
+
+    /* ==================== TAB CONTENT STYLES ==================== */
+    .tab-button { background: none; border: none; padding: 0.75rem 1.5rem; font-size: 0.95rem; font-weight: 500; color: #666; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s ease; position: relative; }
+    .tab-button:hover { color: #1a1a1a; }
+    .tab-button.active { color: #667eea; border-bottom-color: #667eea; }
+    /* ==================== SECTION CONTAINERS ==================== */
+    .tab-content { display: none; padding: 2rem 1rem; max-width: 1200px; margin: 0 auto; background: #f8f9fa; }
+    .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Typography and content */
+    .section-title, .demo-section-title, .demo-examples-title, .demo-code-title, .license-title { font-weight: 600; color: #1a1a1a; margin: 0 0 0.75rem; }
+    .section-title { font-size: 24px; margin: 0 0 1.5rem; letter-spacing: -0.02em; }
+    .demo-section-title { font-size: 1rem; }
+    .demo-examples-title, .demo-code-title { font-size: 0.9rem; color: #374151; }
+    .demo-code-title, .license-title { margin: 0 0 0.5rem; }
+    .license-title { font-size: 0.95rem; }
+
+    .section-description { font-size: 0.9rem; color: #555; line-height: 1.6; }
+    .license-text { margin: 0; color: #666; font-size: 0.8rem; line-height: 1.4; }
+
+    /* Grid layouts */
+    .covers-grid, .feature-grid, .preset-squircles, .preset-grid, .table-code-grid, .demo-content-grid, .demo-color-grid, .demo-options-grid, .section-row, .control-row { display: grid; gap: 1rem; }
+    .covers-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 2rem; }
+    .feature-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin: 2rem 0 0 0; }
+    .preset-squircles { grid-template-columns: repeat(auto-fit, minmax(35px, 1fr)); gap: 0.75rem; margin-top: 0.75rem; }
+    .preset-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; margin-top: 1rem; }
+    .table-code-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin-top: 1rem; }
+    .demo-content-grid { grid-template-columns: 1fr 1fr; }
+    .demo-color-grid { grid-template-columns: 150px 150px 1fr; margin-bottom: 1rem; }
+    .demo-options-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+    .section-row { grid-template-columns: 1fr 1fr; margin-bottom: 1rem; }
+    .control-row { grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+
+    .cover-item { text-align: center; }
+    .cover-label { font-size: 0.875rem; color: #666; margin-top: 0.75rem; font-weight: 500; }
+    .squircle { width: 35px; height: 35px; border-radius: 12px; position: relative; display: flex; align-items: center; justify-content: center; color: white; font-weight: 500; font-size: 1rem; }
+    .left-side { overflow-x: auto; }
+    .feature-card { padding: 1.5rem; border-radius: 8px; }
+
+    .feature-card.typography { background: #f8fafc; border: 1px solid rgba(102, 126, 234, 0.2); }
+    .feature-card.presets { background: #f0fdf4; border: 1px solid rgba(16, 185, 129, 0.2); }
+    .feature-card.effects { background: #fef7ff; border: 1px solid rgba(168, 85, 247, 0.2); }
+    .feature-card.dependencies { background: #fffbeb; border: 1px solid rgba(245, 158, 11, 0.2); }
+    .feature-card h4 { margin: 0 0 0.75rem; color: #1a1a1a; font-size: 1rem; font-weight: 600; }
+    .feature-card p { margin: 0; color: #64748b; font-size: 0.9rem; line-height: 1.5; }
+
+    /* ==================== LAYOUT STYLES ==================== */
+    .section-row .showcase-section { margin-bottom: 0; }
+    .demo-main, .side-by-side, .side-by-side-wide { display: grid; gap: 1.5rem; align-items: start; }
+    .demo-main { grid-template-columns: 1fr 300px; gap: 3rem; }
+    .side-by-side { grid-template-columns: 1fr 200px; }
+    .side-by-side-wide { grid-template-columns: 1fr 250px; }
+
+    /* ==================== CODE & CONTENT STYLES ==================== */
+    .inline-code { padding: 0.2em 0.4em; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 0.85em; color: #059669; font-weight: 500; }
+    td .inline-code { background: none; font-size: 1em; }
+    /* License section */
+    .license-title { margin: 0 0 0.5rem; color: #1a1a1a; font-size: 0.95rem; }
+    .license-text { margin: 0; color: #666; font-size: 0.8rem; line-height: 1.4; }
+    .license-link { text-align: center; margin: 0; }
+    .license-link a, .link { color: #0366d6; text-decoration: none; font-weight: 500; font-size: 0.9rem; }
+
+    /* ==================== INLINE STYLES TO CLASSES ==================== */
+    .preset-header { margin: 1.5rem 0 1rem; font-size: 1rem; color: #1a1a1a; }
+
+    .preset-0 { background: linear-gradient(135deg, #e6fdf5 0%, #2c3861 100%); }
+    .preset-1 { background: linear-gradient(135deg, #c5f3e3 0%, #3a4254 100%); }
+    .preset-2 { background: linear-gradient(135deg, #e6de88 0%, #385652 100%); }
+    .preset-3 { background: linear-gradient(135deg, #e8bf68 0%, #e77352 100%); }
+    .preset-4 { background: linear-gradient(135deg, #f4a436 0%, #6fb295 100%); }
+    .preset-5 { background: linear-gradient(135deg, #eada85 0%, #850b07 100%); }
+    .preset-6 { background: linear-gradient(135deg, #f3bebe 0%, #1271be 100%); }
+    .preset-7 { background: linear-gradient(135deg, #f87e85 0%, #857ef8 100%); }
+    .preset-8 { background: linear-gradient(135deg, #f5a665 0%, #3a4857 100%); }
+    .preset-9 { background: linear-gradient(135deg, #c0c0c0 0%, #4b545b 100%); }
+    .preset-10 { background: linear-gradient(135deg, #6d727f 0%, #e54c4c 100%); }
+    .preset-11 { background: linear-gradient(135deg, #547656 0%, #4e3135 100%); }
+
+    /* Demo sections - consolidated */
+    .demo-examples-box, .demo-content-section, .demo-color-section, .demo-image-section, .demo-effects-section, .demo-options-section { margin-bottom: 1.5rem; }
+    /* Form elements consolidated */
+    .demo-input-label { display: block; font-size: 0.85rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem; }
+    .demo-checkbox-label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+    .demo-examples-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .demo-effects-grid { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+
+    .demo-text-input, .demo-select, .demo-file-input, .demo-color-hex { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.85rem; }
+    .demo-text-input { font-size: 0.9rem; }
+    .demo-color-hex { width: 100px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+    .demo-color-picker { width: 40px; height: 40px; border: 1px solid #d1d5db; border-radius: 4px; cursor: pointer; }
+    .demo-color-inputs { display: flex; gap: 0.5rem; }
+    .demo-image-controls { display: flex; gap: 0.5rem; align-items: end; }
+    .demo-image-input-wrapper { flex: 1; }
+    .demo-clear-button { padding: 0.5rem 1rem; height: 39px; background: #667eea; color: white; border: none; border-radius: 4px; font-size: 0.85rem; cursor: pointer; }
+    .demo-image-hint { font-size: 0.75rem; color: #6b7280; margin: 0.25rem 0 0; }
+    .demo-checkbox { width: 16px; height: 16px; accent-color: #667eea; }
+    .demo-checkbox-text { font-size: 0.85rem; color: #374151; }
+
+    .demo-code-section { margin-top: 1rem; }
+    .demo-code-title { margin: 0 0 0.5rem; font-size: 0.9rem; color: #374151; font-weight: 600; }
+    .demo-code-block { margin: 0; }
+    .file-input-group { display: flex; gap: 0.5rem; align-items: stretch; }
+    .control-hint, .demo-image-hint { font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem; }
+    .demo-image-hint { margin: 0.25rem 0 0; }
+    .code-block { background: #f8f9fa; padding: 1rem; border-radius: 6px; border: 1px solid #e1e5e9; position: relative; overflow-x: auto; }
+    .code-block pre { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.4; color: #374151; white-space: break-spaces; word-break: break-word; }
+    .code-example { text-align: center; }
+    .code-example-label { font-size: 0.8rem; color: #666; margin-top: 0.5rem; }
+
+    /* ==================== TABLE STYLES ==================== */
+    .compact-table { width: 100%; border-collapse: separate; border-spacing: 0; background: white; border-radius: 8px; font-size: 0.85rem; border: 1px solid #e1e5e9; overflow: hidden; }
+    .compact-table thead th { background: #f8fafc; padding: 0.75rem; font-weight: 600; font-size: 0.8rem; color: #374151; text-align: left; border-bottom: 1px solid #e1e5e9; border-right: 1px solid #e1e5e9; }
+    .compact-table thead th:last-child { border-right: none; }
+    .compact-table tbody tr { border-top: 1px solid #f1f5f9; }
+    .compact-table tbody tr:first-child { border-top: none; }
+    .compact-table tbody tr:nth-child(even) { background: #f8fafc; }
+    .compact-table td { padding: 0.75rem; vertical-align: top; border-right: 1px solid #f1f5f9; }
+    .compact-table td:last-child { color: #475569; border-right: none; }
+    .compact-table td:first-child { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #059669; }
+    /* Example buttons */
+    .example-button { padding: 0.5rem 1rem; background: white; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.8rem; color: #374151; cursor: pointer; transition: all 0.2s ease; }
+    .example-button:hover { background: #f9fafb; border-color: #9ca3af; }
+    .example-button:active { background: #f3f4f6; }
+
+    @media (max-width: 1100px) { .section-row { grid-template-columns: 1fr; gap: 1rem; } }
+    @media (max-width: 768px) {
+      .header-title { font-size: 2rem; }
+      .tab-button { padding: 0.75rem 1rem; font-size: 0.9rem; }
+      .showcase-section { padding: 1.5rem; margin-bottom: 1.5rem; }
+      .section-title { font-size: 1.6rem; }
+      .section-row { grid-template-columns: 1fr; gap: 1.5rem; }
+      .side-by-side, .side-by-side-wide { display: block; }
+      .side-by-side > div:last-child, .side-by-side-wide > div:last-child { margin-top: 1.5rem; text-align: center; }
+      .feature-grid, .table-code-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .preset-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.5rem; }
+      .covers-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
+      .control-row, .demo-main { grid-template-columns: 1fr; gap: 1rem; }
+      .demo-main { gap: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <h1 class="header-title">CoverizeJS</h1>
+    </div>
+  </header>
+
+  <nav class="tab-nav">
+    <button class="tab-button active" onclick="showTab('about')">Readme</button>
+    <button class="tab-button" onclick="showTab('demo')">Demo</button>
+  </nav>
+
+  <div id="about-tab" class="tab-content active">
+    <!-- About Section -->
+    <section class="showcase-section">
+      <h2 class="section-title">About</h2>
+      <div class="section-description">
+        <p><strong>CoverizeJS</strong> is a lightweight JavaScript library created by <a class="link" href="https://github.com/aosmcleod" target="_blank">@aosmcleod</a> and designed for programmatically generating beautiful book covers directly in the browser.
+        Perfect for digital libraries, book catalogs, publishing platforms, or any application where you need consistent, professional cover visuals on demand.</p>
+
+        <div class="feature-grid">
+          <div class="feature-card typography">
+            <h4>Smart Typography</h4>
+            <p>Automatic typesetting for professional-looking multi-line titles and author names.</p>
+          </div>
+          <div class="feature-card presets">
+            <h4>Flexible Backgrounds</h4>
+            <p>Support for images, custom palettes, and 12 carefully crafted color gradients.</p>
+          </div>
+          <div class="feature-card effects">
+            <h4>Visual Effects</h4>
+            <p>Realistic shadows, paper textures, and depth effects for authentic book aesthetics.</p>
+          </div>
+          <div class="feature-card dependencies">
+            <h4>Zero Dependencies</h4>
+            <p>Pure JavaScript and CSS implementation &mdash; no external libraries required.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-row">
+      <section class="showcase-section">
+        <h2 class="section-title">API Reference</h2>
+        <div class="section-description">
+          <p>CoverizeJS uses a fluent API pattern. Chain methods to configure your cover, then call <span class="inline-code">.render()</span> to generate the DOM element.</p>
+          
+          <table class="compact-table">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="inline-code">.title(text)</span></td>
+                <td>Set the book title</td>
+              </tr>
+              <tr>
+                <td><span class="inline-code">.author(text)</span></td>
+                <td>Set the author name</td>
+              </tr>
+              <tr>
+                <td><span class="inline-code">.color(preset)</span></td>
+                <td>Apply color preset or custom colors</td>
+              </tr>
+              <tr>
+                <td><span class="inline-code">.image(url)</span></td>
+                <td> Use a custom background image</td>
+              </tr>
+              <tr>
+                <td><span class="inline-code">.effects(obj)</span></td>
+                <td>Enable/disable visual effects</td>
+              </tr>
+              <tr>
+                <td><span class="inline-code">.options(obj)</span></td>
+                <td>Set typography and layout options</td>
+              </tr>
+              <tr>
+                <td><span class="inline-code">.render()</span></td>
+                <td>Generate DOM element for insertion</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="showcase-section">
+        <h2 class="section-title">Usage</h2>
+        <p>Create book covers using the <span class="inline-code">.cover()</span> method, then set text content with the <span class="inline-code">.title()</span> and <span class="inline-code">.author()</span> methods.</p>
+        <div class="side-by-side">
+          <div class="code-block">
+            <pre><code>const cover = Coverize.cover()
+  .title('The Catcher in the Rye')
+  .author('J.D. Salinger')
+  .color(3)
+  .effects({ realism: true, texture: true })
+  .options({ font: 'sans', size: 'regular', emphasis: 'both', ratio: 0.67 })
+  .render();
+
+// Add to your page
+document.getElementById('id')
+  .appendChild(cover);</code></pre>
+          </div>
+          <div class="code-example">
+            <div id="usage-example"></div>
+            <div class="code-example-label">Generated Cover</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="section-row">
+      <section class="showcase-section">
+        <h2 class="section-title">Color</h2>
+        <p>Style covers using custom or preset colors with the <span class="inline-code">.color()</span> method.</p>
+        <div class="side-by-side">
+          <div class="left-side">
+            <div class="code-block">
+              <pre><code>// Single color
+.color('#e8bf68')
+
+// Two colors for gradient
+.color('#e8bf68', '#e77352')
+
+// Preset color (0-11)
+.color(2)
+</code></pre>
+            </div>
+            
+            <div class="color-presets">
+              <h4 class="preset-header">Color Presets</h4>
+              <div class="preset-squircles">
+                <div class="squircle preset-0" data-preset="0" title="0 - Pearl Shore">0</div>
+                <div class="squircle preset-1" data-preset="1" title="1 - Sage Abbey">1</div>
+                <div class="squircle preset-2" data-preset="2" title="2 - Mossy Hollow">2</div>
+                <div class="squircle preset-3" data-preset="3" title="3 - Honey Chapel">3</div>
+                <div class="squircle preset-4" data-preset="4" title="4 - Olive Grove">4</div>
+                <div class="squircle preset-5" data-preset="5" title="5 - Sienna Reach">5</div>
+                <div class="squircle preset-6" data-preset="6" title="6 - Azure Vale">6</div>
+                <div class="squircle preset-7" data-preset="7" title="7 - Carmine Bay">7</div>
+                <div class="squircle preset-8" data-preset="8" title="8 - Copper Barrow">8</div>
+                <div class="squircle preset-9" data-preset="9" title="9 - Pewter Steppe">9</div>
+                <div class="squircle preset-10" data-preset="10" title="10 - Brandy Copse">10</div>
+                <div class="squircle preset-11" data-preset="11" title="11 - Jasper Forge">11</div>
+              </div>
+            </div>
+          </div>
+          <div class="code-example">
+            <div id="color-example"></div>
+            <div class="code-example-label">Custom Colors</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="showcase-section">
+        <h2 class="section-title">Image</h2>
+        <p>Use images for custom cover backgrounds with the <span class="inline-code">.image()</span> method.</p>
+        <div class="side-by-side">
+          <div class="code-block">
+            <pre><code>const cover = Coverize.cover()
+  .image('sample.png')
+  .effects({ realism: true, texture: false })
+  .render();
+</code></pre>
+          </div>
+          <div class="code-example">
+            <div id="image-example"></div>
+            <div class="code-example-label">Image Example</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="section-row">
+      <section class="showcase-section">
+          <h2 class="section-title">Effects</h2>
+        <div class="section-description">
+          <p>Layer book aesthetic effects with the <span class="inline-code">.effects()</span> method.</p>
+
+          <div class="table-code-grid">
+            <div>
+              <table class="compact-table">
+                <thead>
+                  <tr>
+                    <th>Property</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>realism</td>
+                    <td>Book spine, shadows, and highlights (default: true)</td>
+                  </tr>
+                  <tr>
+                    <td>texture</td>
+                    <td>Paper-like texture and linen pattern (default: true)</td>
+                  </tr>
+                  <tr>
+                    <td>depth</td>
+                    <td>Subtle page and back cover imply depth (default: false)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-block">
+              <pre><code>.effects({ 
+  realism: true, 
+  texture: true, 
+  depth: false 
+})</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="showcase-section">
+        <h2 class="section-title">Options</h2>
+        <div class="section-description">
+          <p>Fine-tune typography and layout with the <span class="inline-code">.options()</span> method.</p>
+          
+          <div class="table-code-grid">
+            <div>
+              <table class="compact-table">
+                <thead>
+                  <tr>
+                    <th>Property</th>
+                    <th>Values</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>font</td>
+                    <td>'serif' | 'sans' (default: 'sans')</td>
+                  </tr>
+                  <tr>
+                    <td>size</td>
+                    <td>'small' | 'regular' | 'large' (default: 'regular')</td>
+                  </tr>
+                  <tr>
+                    <td>emphasis</td>
+                    <td>'case' | 'bold' | 'both' (default: 'both')</td>
+                  </tr>
+                  <tr>
+                    <td>ratio</td>
+                    <td>0.5 - 1.0 width/height (default: 0.67)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-block">
+              <pre><code>.options({ 
+  font: 'serif', 
+  size: 'large', 
+  emphasis: 'case',
+  ratio: 0.8 
+})</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div>
+      <section class="showcase-section">
+        <h2 class="section-title">License</h2>
+        <div class="section-description">
+          <p>CoverizeJS is open source under the GNU General Public License v3.0.</p>
+          
+          <div class="license-box">
+            <h4 class="license-title">GNU GPL v3.0</h4>
+            <p class="license-text">
+              This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div id="demo-tab" class="tab-content">
+    <div class="section-row">
+      <section class="showcase-section">
+        <h2 class="section-title">Configuration</h2>
+        
+        <!-- Quick Examples -->
+        <div class="demo-examples-box">
+          <h4 class="demo-examples-title">Quick Examples</h4>
+          <div class="demo-examples-buttons">
+            <button class="example-button" onclick="loadExample('gatsby')">The Great Gatsby</button>
+            <button class="example-button" onclick="loadExample('pride')">Pride and Prejudice</button>
+            <button class="example-button" onclick="loadExample('catcher')">The Catcher in the Rye</button>
+          </div>
+        </div>
+
+        <!-- Content Controls -->
+        <div class="demo-content-section">
+          <h4 class="demo-section-title">Content</h4>
+          <div class="demo-content-grid">
+            <div>
+              <label class="demo-input-label">Book Title</label>
+              <input type="text" class="demo-text-input" id="demo-title" value="The Great Gatsby" oninput="updateDemo()">
+            </div>
+            <div>
+              <label class="demo-input-label">Author</label>
+              <input type="text" class="demo-text-input" id="demo-author" value="F. Scott Fitzgerald" oninput="updateDemo()">
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-color-section">
+          <h4 class="demo-section-title">Color</h4>
+          <div class="demo-color-grid">
+            <div>
+              <label class="demo-input-label">Primary Color</label>
+              <div class="demo-color-inputs">
+                <input type="color" id="demo-color1" value="#f87e85" onchange="updateDemo()" class="demo-color-picker">
+                <input type="text" id="demo-color1-hex" value="#f87e85" oninput="syncColorInput('color1')" class="demo-color-hex">
+              </div>
+            </div>
+            <div>
+              <label class="demo-input-label">Secondary Color</label>
+              <div class="demo-color-inputs">
+                <input type="color" id="demo-color2" value="#857ef8" onchange="updateDemo()" class="demo-color-picker">
+                <input type="text" id="demo-color2-hex" value="#857ef8" oninput="syncColorInput('color2')" class="demo-color-hex">
+              </div>
+            </div>
+            <div>
+              <label class="demo-input-label">Preset</label>
+              <select id="demo-preset" onchange="applyPreset()" class="demo-select">
+                <option value="">Custom</option>
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7" selected>7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-image-section">
+          <h4 class="demo-section-title">Image</h4>
+          <div class="demo-image-controls">
+            <div class="demo-image-input-wrapper">
+              <input type="file" id="demo-image" accept="image/*" onchange="handleImageUpload(this)" class="demo-file-input">
+            </div>
+            <button type="button" onclick="clearImage()" class="demo-clear-button">Clear</button>
+          </div>
+          <p class="demo-image-hint">Upload your own image</p>
+        </div>
+
+        <div class="demo-effects-section">
+          <h4 class="demo-section-title">Effects</h4>
+          <div class="demo-effects-grid">
+            <label class="demo-checkbox-label">
+              <input type="checkbox" id="demo-realism" checked onchange="updateDemo()" class="demo-checkbox">
+              <span class="demo-checkbox-text">Realism</span>
+            </label>
+            <label class="demo-checkbox-label">
+              <input type="checkbox" id="demo-texture" checked onchange="updateDemo()" class="demo-checkbox">
+              <span class="demo-checkbox-text">Texture</span>
+            </label>
+            <label class="demo-checkbox-label">
+              <input type="checkbox" id="demo-depth" onchange="updateDemo()" class="demo-checkbox">
+              <span class="demo-checkbox-text">Depth</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="demo-options-section">
+          <h4 class="demo-section-title">Options</h4>
+          <div class="demo-options-grid">
+            <div>
+              <label class="demo-input-label">Font</label>
+              <select id="demo-font" onchange="updateDemo()" class="demo-select">
+                <option value="sans">Sans Serif</option>
+                <option value="serif">Serif</option>
+              </select>
+            </div>
+            <div>
+              <label class="demo-input-label">Size</label>
+              <select id="demo-size" onchange="updateDemo()" class="demo-select">
+                <option value="small">Small</option>
+                <option value="regular" selected>Regular</option>
+                <option value="large">Large</option>
+              </select>
+            </div>
+            <div>
+              <label class="demo-input-label">Emphasis</label>
+              <select id="demo-emphasis" onchange="updateDemo()" class="demo-select">
+                <option value="both" selected>Both</option>
+                <option value="case">Case</option>
+                <option value="bold">Bold</option>
+              </select>
+            </div>
+            <div>
+              <label class="demo-input-label">Ratio</label>
+              <select id="demo-ratio" onchange="updateDemo()" class="demo-select">
+                <option value="0.6">0.6</option>
+                <option value="0.67" selected>0.67</option>
+                <option value="0.75">0.75</option>
+                <option value="0.8">0.8</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="showcase-section">
+        <h2 class="section-title">Live Preview</h2>
+        <p>Your cover updates in real-time as you make changes to the configuration settings.</p>
+          
+          <div class="demo-result">
+            <div id="live-demo"></div>
+          </div>
+          
+          <div class="demo-code-section">
+            <h4 class="demo-code-title">Generated Code</h4>
+            <div class="code-block demo-code-block">
+              <pre id="live-code"><code></code></pre>
+            </div>
+          </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="../coverize.js"></script>
+  <script>
+    let currentImageUrl = null;
+
+    const colorPresets = {
+      0: ['#e6fdf5', '#2c3861'], 1: ['#c5f3e3', '#3a4254'], 2: ['#e6de88', '#385652'], 3: ['#e8bf68', '#e77352'],
+      4: ['#f4a436', '#6fb295'], 5: ['#eada85', '#850b07'], 6: ['#f3bebe', '#1271be'], 7: ['#f87e85', '#857ef8'],
+      8: ['#f5a665', '#3a4857'], 9: ['#c0c0c0', '#4b545b'], 10: ['#6d727f', '#e54c4c'], 11: ['#547656', '#4e3135']
+    };
+
+    const examples = {
+      gatsby: { title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', preset: '7', font: 'sans', size: 'regular', emphasis: 'both', ratio: '0.67', realism: true, texture: true, depth: false },
+      pride: { title: 'Pride and Prejudice', author: 'Jane Austen', preset: '2', font: 'serif', size: 'regular', emphasis: 'bold', ratio: '0.67', realism: true, texture: true, depth: false },
+      catcher: { title: 'The Catcher in the Rye', author: 'J.D. Salinger', preset: '3', font: 'sans', size: 'regular', emphasis: 'both', ratio: '0.67', realism: true, texture: true, depth: false }
+    };
+
+    function showTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+      document.getElementById(tabName + '-tab').classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    function loadExample(type) {
+      const config = examples[type];
+      if (!config) return;
+      currentImageUrl = null;
+      document.getElementById('demo-image').value = '';
+      Object.entries({
+        'demo-title': config.title, 'demo-author': config.author, 'demo-preset': config.preset,
+        'demo-font': config.font, 'demo-size': config.size, 'demo-emphasis': config.emphasis,
+        'demo-ratio': config.ratio, 'demo-realism': config.realism, 'demo-texture': config.texture, 'demo-depth': config.depth
+      }).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        element.type === 'checkbox' ? element.checked = value : element.value = value;
+      });
+      applyPreset();
+    }
+
+    function applyPreset() {
+      const presetValue = document.getElementById('demo-preset').value;
+      if (presetValue && colorPresets[presetValue]) {
+        const colors = colorPresets[presetValue];
+        ['demo-color1', 'demo-color2'].forEach((id, i) => {
+          document.getElementById(id).value = colors[i];
+          document.getElementById(id + '-hex').value = colors[i];
+        });
+      }
+      updateDemo();
+    }
+
+    function syncColorInput(colorNum) {
+      const hexInput = document.getElementById(`demo-color${colorNum}-hex`);
+      const colorInput = document.getElementById(`demo-color${colorNum}`);
+      if (hexInput.value.match(/^#[0-9A-F]{6}$/i)) {
+        colorInput.value = hexInput.value;
+        document.getElementById('demo-preset').value = '';
+        updateDemo();
+      }
+    }
+
+    function handleImageUpload(input) {
+      const file = input.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = e => { currentImageUrl = e.target.result; updateDemo(); };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function clearImage() {
+      currentImageUrl = null;
+      document.getElementById('demo-image').value = '';
+      updateDemo();
+    }
+
+    function getConfig() {
+      const get = id => document.getElementById(id);
+      return {
+        title: get('demo-title').value, author: get('demo-author').value,
+        color1: get('demo-color1').value, color2: get('demo-color2').value,
+        font: get('demo-font').value, size: get('demo-size').value,
+        emphasis: get('demo-emphasis').value, ratio: parseFloat(get('demo-ratio').value),
+        realism: get('demo-realism').checked, texture: get('demo-texture').checked, depth: get('demo-depth').checked
+      };
+    }
+
+    function updateDemo() {
+      const config = getConfig(), container = document.getElementById('live-demo');
+      container.innerHTML = '';
+      let cover = Coverize.cover().title(config.title).author(config.author)
+        .effects({ realism: config.realism, texture: config.texture, depth: config.depth })
+        .options({ font: config.font, size: config.size, emphasis: config.emphasis, ratio: config.ratio });
+      cover = currentImageUrl ? cover.image(currentImageUrl) : cover.color(config.color1, config.color2);
+      container.appendChild(cover.render());
+      document.getElementById('demo-color1-hex').value = config.color1;
+      document.getElementById('demo-color2-hex').value = config.color2;
+      updateLiveCode();
+    }
+
+    function updateLiveCode() {
+      const config = getConfig();
+      let code = `const cover = Coverize.cover()
+  .title('${config.title}')
+  .author('${config.author}')`;
+      code += currentImageUrl ? `\n  .image('your-image-url.jpg')` : `\n  .color('${config.color1}', '${config.color2}')`;
+      code += `
+  .effects({ realism: ${config.realism}, texture: ${config.texture}, depth: ${config.depth} })
+  .options({ font: '${config.font}', size: '${config.size}', emphasis: '${config.emphasis}', ratio: ${config.ratio} })
+  .render();
+
+// Add to your page
+document.getElementById('container').appendChild(cover);`;
+      document.getElementById('live-code').textContent = code;
+    }
+
+    function createShowcaseCover(containerId, config) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      let cover = Coverize.cover();
+      ['title', 'author', 'color', 'image', 'effects', 'options'].forEach(prop => {
+        if (config[prop] !== undefined) cover = cover[prop](config[prop]);
+      });
+      container.appendChild(cover.render());
+    }
+
+    function initializeShowcaseCovers() {
+      createShowcaseCover('usage-example', { title: 'The Catcher in the Rye', author: 'J.D. Salinger', color: 3, effects: { realism: true, texture: true } });
+      createShowcaseCover('color-example', { title: 'Custom Colors', author: 'Design Example', color: 2, effects: { realism: false, texture: false } });
+      createShowcaseCover('image-example', { title: '', author: '', image: 'sample.png', effects: { realism: true, texture: false } });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeShowcaseCovers();
+      applyPreset();
+      ['demo-color1', 'demo-color2'].forEach(id => {
+        const colorInput = document.getElementById(id);
+        const hexInput = document.getElementById(id + '-hex');
+        colorInput.addEventListener('change', function() {
+          hexInput.value = this.value;
+          document.getElementById('demo-preset').value = '';
+          updateDemo();
+        });
+      });
+    });
+  </script>
+</body>
+</html>

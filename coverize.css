@@ -1,0 +1,420 @@
+/*╭────────────────────────────────────────────────╮ 
+  │ COVERIZE.CSS - Book Cover Generation Library   │
+  │ Version: 1.0.0                                 │
+  │ License: GPL-3.0                               │
+  ╰────────────────────────────────────────────────╯*/
+
+/* =================================================================
+   CSS CUSTOM PROPERTIES
+   ================================================================= */
+
+:root {
+  /* Layout & Dimensions */
+  --coverize-default-ratio: 0.67;
+  --coverize-default-width: 200px;
+  --coverize-border-radius: 0.8em;
+  --coverize-border-radius-realism: 0.4em 0.52em 0.52em 0.4em;
+  --coverize-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+  
+  /* Typography */
+  --coverize-font-sans: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --coverize-font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --coverize-text-primary: #f9f9f9;
+  --coverize-text-shadow-dark: rgba(30,30,30,0.38);
+  --coverize-text-shadow-light: rgba(255,255,255,0.22);
+  --coverize-line-height: 1.1;
+  
+  /* Size System */
+  --coverize-title-size: 2em;
+  --coverize-author-size: 1.15em;
+  --coverize-secondary-size: 1.2em;
+  
+  /* Effect Opacities */
+  --coverize-texture-opacity: 0.5;
+  --coverize-sheen-opacity: 0.8;
+  --coverize-typeset-opacity: 0.95;
+  
+  /* Color Palette - Light Tones */
+  --coverize-white-18: rgba(255,255,255,0.18);
+  --coverize-white-10: rgba(255,255,255,0.10);
+  
+  /* Color Palette - Dark Tones */
+  --coverize-black-18: rgba(0,0,0,0.18);
+  --coverize-black-10: rgba(0,0,0,0.10);
+  --coverize-black-08: rgba(0,0,0,0.08);
+  --coverize-black-04: rgba(0,0,0,0.04);
+  
+  /* Texture Colors */
+  --coverize-linen-light: rgba(210,180,140,0.22);
+  --coverize-linen-medium: rgba(180,140,100,0.18);
+  --coverize-linen-warm: rgba(220,180,120,0.18);
+  --coverize-linen-dark: rgba(180,120,60,0.11);
+}
+
+/* =================================================================
+   CORE LAYOUT & STRUCTURE
+   ================================================================= */
+
+.coverize {
+  /* Core Positioning */
+  position: relative;
+  width: var(--coverize-default-width);
+  aspect-ratio: var(--coverize-default-ratio);
+  
+  /* Visual Properties */
+  border-radius: var(--coverize-border-radius);
+  box-shadow: var(--coverize-shadow);
+  
+  /* Layout Properties */
+  overflow: visible;
+  isolation: isolate;
+  box-sizing: border-box;
+  font-size: 1rem;
+  
+  /* Size System Variables */
+  --coverize-title-size: 2em;
+  --coverize-author-size: 1.15em;
+  --coverize-secondary-size: 1.2em;
+}
+
+/* Layer System */
+.coverize-background,
+.coverize-effects,
+.coverize-typeset {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.coverize-background,
+.coverize-effects {
+  overflow: hidden; /* Clipping container */
+}
+
+/* Z-Index Layering */
+.coverize-background { z-index: 1; }
+.coverize-image { z-index: 2; }
+.coverize-effects { z-index: 20; }
+.coverize-typeset { 
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  opacity: var(--coverize-typeset-opacity);
+  padding: 0;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.coverize-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+/* =================================================================
+   TYPOGRAPHY SYSTEM
+   ================================================================= */
+
+.coverize-typeset-line {
+  font-family: var(--coverize-font-sans);
+  text-align: center;
+  line-height: var(--coverize-line-height);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Font Variants */
+.coverize-title-serif,
+.coverize-author-serif { 
+  font-family: var(--coverize-font-serif);
+}
+
+/* Text Block Layout */
+.coverize-title-block,
+.coverize-author-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.coverize-title-block { 
+  justify-content: flex-start;
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: visible;
+  padding: 10% 10% 0 10%;
+}
+
+.coverize-title-block.has-author {
+  -webkit-mask: linear-gradient(to bottom, black 0%, black 82%, transparent 100%);
+  mask: linear-gradient(to bottom, black 0%, black 82%, transparent 100%);
+}
+
+.coverize-author-block { 
+  justify-content: flex-end;
+  flex-shrink: 0;
+  margin-top: auto;
+  padding: 0 10% 10% 10%;
+}
+
+/* Typography Elements */
+.coverize-typeset-line.coverize-title {
+  margin: 0 0 0.1em;
+  font-size: var(--coverize-title-size);
+  max-width: none;
+  overflow: visible;
+}
+
+.coverize-typeset-line.coverize-author {
+  margin: 0.5rem 0.8rem 0;
+  font-size: var(--coverize-author-size);
+  text-transform: uppercase;
+}
+
+/* Text Styling Modifiers */
+.coverize-line--uppercase { text-transform: uppercase; }
+.coverize-line--bold { font-weight: 600 !important; }
+.coverize-line--secondary { font-weight: 300 !important; }
+
+.coverize-typeset-line.coverize-title + .coverize-line--secondary {
+  margin-top: -0.1em;
+}
+
+/* =================================================================
+   SIZE SYSTEM
+   ================================================================= */
+
+.coverize-size-small {
+  --coverize-title-size: 1.4em;
+  --coverize-author-size: 0.8em;
+  --coverize-secondary-size: 0.9em;
+}
+
+.coverize-size-regular {
+  --coverize-title-size: 2em;
+  --coverize-author-size: 1.15em;
+  --coverize-secondary-size: 1.2em;
+}
+
+.coverize-size-large {
+  --coverize-title-size: 2.8em;
+  --coverize-author-size: 1.6em;
+  --coverize-secondary-size: 1.5em;
+}
+
+.coverize-line--uppercase { text-transform: uppercase; }
+.coverize-line--bold { font-weight: 600 !important; }
+.coverize-line--secondary { font-weight: 300 !important; }
+
+.coverize-typeset-line.coverize-title + .coverize-line--secondary {
+  margin-top: -0.1em;
+}
+
+.coverize-text-debossed {
+  color: var(--coverize-text-primary);
+  text-shadow: 
+    0 -2px 3px var(--coverize-text-shadow-dark),
+    0 1px 0.5px var(--coverize-text-shadow-light);
+  filter: brightness(1.13) saturate(1.01);
+  mix-blend-mode: lighten;
+}
+
+/* =================================================================
+   REALISM EFFECTS
+   ================================================================= */
+
+.coverize[data-realism="true"] .coverize-title-block {
+  padding: 10% 10% 0 12%;
+}
+
+.coverize[data-realism="true"] .coverize-author-block {
+  padding: 0 10% 10% 12%;
+}
+
+.coverize[data-realism="true"] {
+  border-radius: var(--coverize-border-radius-realism);
+}
+
+/* =================================================================
+   TEXT EFFECTS
+   ================================================================= */
+
+/* VISUAL EFFECTS */
+.coverize-texture,
+.coverize-sheen,
+.coverize-realism,
+.coverize-spine,
+.coverize-depth {
+  position: absolute;
+  pointer-events: none;
+  border-radius: inherit;
+  contain: layout style paint;
+}
+
+.coverize-texture,
+.coverize-sheen,
+.coverize-realism,
+.coverize-spine { inset: 0; }
+
+.coverize-effects { filter: blur(0); }
+.coverize-texture,
+.coverize-sheen {
+  will-change: transform, opacity;
+  transform: translate3d(0,0,0);
+}
+
+/* Texture */
+.coverize-texture {
+  z-index: 10;
+  mix-blend-mode: multiply;
+  opacity: var(--coverize-texture-opacity);
+}
+
+.coverize-texture::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, var(--coverize-linen-light), var(--coverize-linen-medium));
+  filter: blur(6px) saturate(0.7);
+  mix-blend-mode: multiply;
+  opacity: 0.45;
+}
+
+.coverize-texture::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, var(--coverize-linen-warm), var(--coverize-linen-dark));
+  mix-blend-mode: multiply;
+  opacity: 0.18;
+}
+
+/* Realism */
+.coverize-realism {
+  z-index: 3;
+  box-shadow: 
+    inset 0 2px 4px rgba(255,255,255,0.45),
+    inset -2px 0 4px rgba(255,255,255,0.32),
+    inset 0 -3px 4px var(--coverize-black-18);
+}
+
+.coverize-spine {
+  width: 7%;
+  z-index: 3;
+  background: linear-gradient(to right,
+    var(--coverize-black-08) 0%,
+    var(--coverize-black-04) 15%,
+    var(--coverize-white-18) 35%,
+    var(--coverize-white-10) 50%,
+    var(--coverize-black-10) 65%,
+    var(--coverize-black-04) 75%,
+    transparent 100%
+  );
+}
+
+/* Sheen */
+.coverize-sheen {
+  z-index: 201;
+  mix-blend-mode: screen;
+  background: 
+    radial-gradient(ellipse 80% 40% at 60% 20%, 
+      var(--coverize-white-18) 0%, 
+      rgba(255,255,255,0.06) 60%, 
+      transparent 100%
+    );
+  filter: blur(2px);
+  opacity: var(--coverize-sheen-opacity);
+}
+
+.coverize-sheen::before {
+  content: '';
+  position: absolute;
+  top: -7%;
+  left: 50%;
+  width: 68%;
+  height: 22%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse 60% 100% at 50% 0%, 
+    rgba(255,255,255,0.85) 0%, 
+    var(--coverize-white-18) 60%, 
+    transparent 100%
+  );
+  filter: blur(3px);
+  mix-blend-mode: screen;
+  opacity: 0.32;
+}
+
+.coverize-sheen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    linear-gradient(to right,
+      transparent 0%,
+      transparent 98.5%,
+      rgba(255,255,255,0.17) 98.5%,
+      rgba(255,255,255,0.11) 99%,
+      rgba(0,0,0,0.13) 99.2%,
+      rgba(0,0,0,0.26) 99.4%,
+      rgba(0,0,0,0.48) 100%
+    ),
+    linear-gradient(to top,
+      var(--coverize-black-18) 0%,
+      var(--coverize-black-10) 1%,
+      transparent 1%
+    );
+  filter: blur(0.5px);
+  mix-blend-mode: screen;
+  opacity: 0.6;
+}
+
+/* Depth */
+.coverize-depth {
+  left: 3%;
+  bottom: 0.6%;
+  width: calc(100% - 2.5%);
+  height: 1.7%;
+  background: repeating-linear-gradient(to top, #fefefe 0px, #fefefe 1px, #e5e5e5 1px, #e5e5e5 2px);
+  border-radius: 0.4em;
+  box-shadow: 0 0.1em 0.4em rgba(60,40,10,0.18), inset 0 0.1em 0.15em rgba(0,0,0,0.55);
+  z-index: 3;
+}
+
+.coverize[data-realism="true"] .coverize-depth {
+  border-radius: 0.05em 0 0.2em 0.1em;
+}
+
+/* ACCESSIBILITY & BROWSER SUPPORT */
+@media (prefers-reduced-motion: reduce) {
+  .coverize-sheen,
+  .coverize-texture {
+    filter: none;
+    animation: none;
+    will-change: auto;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .coverize-text-debossed {
+    text-shadow: none;
+    color: #000;
+    background: rgba(255,255,255,0.9);
+    padding: 0.2em 0.4em;
+    border-radius: 0.2em;
+  }
+}
+
+@supports not (aspect-ratio: 0.67) {
+  .coverize { height: 150px; }
+}
+
+.coverize[data-realism="true"] {
+  border-radius: var(--coverize-border-radius-realism);
+}
