@@ -1,14 +1,13 @@
 {
   "name": "coverizejs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Intelligent book cover typesetting for visually balanced, multi-line titles and authors.",
-  "main": "coverize.js",
+  "main": "dist/coverize-1.0.0.min.js",
   "type": "module",
   "files": [
     "coverize.js",
     "coverize.css",
     "texture.css",
-    "textures/",
     "demo/",
     "dist/",
     "README.md",
@@ -27,12 +26,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/alecmcleod/coverizejs.git"
+    "url": "https://github.com/aosmcleod/coverizejs.git"
   },
   "bugs": {
-    "url": "https://github.com/alecmcleod/coverizejs/issues"
+    "url": "https://github.com/aosmcleod/coverizejs/issues"
   },
-  "homepage": "https://github.com/alecmcleod/coverizejs#readme",
+  "homepage": "https://github.com/aosmcleod/coverizejs#readme",
   "keywords": [
     "book",
     "cover",

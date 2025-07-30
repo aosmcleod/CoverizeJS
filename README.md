@@ -1,9 +1,12 @@
 # CoverizeJS
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![GitHub release](https://img.shields.io/github/release/alecmcleod/coverizejs.svg)](https://github.com/alecmcleod/coverizejs/releases)
-
 **CoverizeJS** is a lightweight JavaScript library created by [@aosmcleod](https://github.com/aosmcleod) and designed for programmatically generating beautiful book covers directly in the browser. Perfect for digital libraries, book catalogs, publishing platforms, or any application where you need consistent, professional cover visuals on demand.
+
+<p align="center">
+  <img src="demo/example-3.png" width="200" alt="Example book cover 3">
+  <img src="demo/example-2.png" width="200" alt="Example book cover 2">
+  <img src="demo/example-1.png" width="200" alt="Example book cover 1">
+</p>
 
 ## Features
 
@@ -20,14 +23,12 @@ Add CoverizeJS to your HTML page via CDN:
 
 ```html
 <!-- Single file with embedded CSS (easiest) -->
-<script src="https://cdn.jsdelivr.net/gh/alecmcleod/coverizejs@main/dist/coverize-1.0.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/coverizejs/dist/coverize-1.0.0.min.js"></script>
 ```
 
 ### Download
 
-Download the files directly:
-- **Standalone (Recommended):** [coverize-1.0.0.min.js](https://raw.githubusercontent.com/alecmcleod/coverizejs/main/dist/coverize-1.0.0.min.js) *(single file with embedded CSS)*
-- **Development:** [coverize.js](https://raw.githubusercontent.com/alecmcleod/coverizejs/main/coverize.js) | [coverize.css](https://raw.githubusercontent.com/alecmcleod/coverizejs/main/coverize.css)
+Download the minified distribution file directly from this repository (singe .js file with embedded CSS).
 
 ### Local Installation
 
@@ -61,7 +62,7 @@ The simplest way to use CoverizeJS is with the standalone version that includes 
     <div id="cover-container"></div>
     
     <!-- Load CoverizeJS - CSS styles are automatically injected -->
-    <script src="https://cdn.jsdelivr.net/gh/aosmcleod/coverizejs@main/dist/coverize-1.0.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/coverizejs/dist/coverize-1.0.0.min.js"></script>
     <script>
         // Create a book cover
         const cover = Coverize.cover()
