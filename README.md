@@ -336,11 +336,7 @@ npm run release:minor   # Minor version (1.0.0 → 1.1.0)
 npm run release:major   # Major version (1.0.0 → 2.0.0)
 ```
 
-This will:
-- Update version in `package.json`
-- Build distribution files with new version
-- Generate changelog entry
-- Prepare release assets
+This will update the version in `package.json` and build distribution files.
 
 ## License
 
