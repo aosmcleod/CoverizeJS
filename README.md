@@ -1,6 +1,6 @@
 # CoverizeJS
 
-**CoverizeJS** is a lightweight JavaScript library created by [@aosmcleod](https://github.com/aosmcleod) and designed for programmatically generating beautiful book covers directly in the browser. Perfect for digital libraries, book catalogs, publishing platforms, or any application where you need consistent, professional cover visuals on demand.
+**CoverizeJS** is a lightweight JavaScript library designed for programmatically generating beautiful book covers directly in the browser. Perfect for digital libraries, book catalogs, publishing platforms, or any application where you need consistent, professional cover visuals on demand.
 
 <p align="center">
   <img src="demo/example-3.png" width="200" alt="Example book cover 3">
